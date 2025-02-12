@@ -1,0 +1,22 @@
+name: deploy
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Deploy via SSH
+            uses: easingthemes/ssh-deploy@v2.0.0
+            with:
+                host: ${{ secrets.HOST }}
+                username: ${{ secrets.USERNAME }}
+                key: ${{ secrets.SSH_KEY }}
+                script:
+                    cd fastapi-book-project
+                    git pull origin main
+                    sudo service restart fastapi
