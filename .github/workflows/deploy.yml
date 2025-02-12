@@ -1,22 +1,21 @@
-name: deploy
+name: Deploy to AWS
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches: [ main ]
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Deploy via SSH
-            uses: easingthemes/ssh-deploy@v2.0.0
-            with:
-                host: ${{ secrets.HOST }}
-                username: ${{ secrets.USERNAME }}
-                key: ${{ secrets.SSH_KEY }}
-                script:
-                    cd fastapi-book-project
-                    git pull origin main
-                    sudo service restart fastapi
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_IP }}
+          username: ubuntu
+          key: ${{ secrets.AWS_SSH_KEY }}
+          script: |
+            cd fastapi-book-project
+            git pull origin main
+            pip3 install -r requirements.txt
+            sudo systemctl restart fastapi
