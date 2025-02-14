@@ -1,0 +1,25 @@
+name: Deploy to AWS
+
+
+on:
+  push:
+    branches: [ main ]
+
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_IP }}
+          username: ubuntu
+          key: ${{ secrets.AWS_SSH_KEY }}
+          script: |
+            cd home/ubuntu/fastapi-book-project
+            git pull origin main
+            source env/bin/activate
+            pip3 install -r requirements.txt
+            sudo systemctl restart fastapi
